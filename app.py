@@ -45,7 +45,7 @@ if 'glow_active' not in st.session_state:
 st.markdown("""
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
-        html, body, , h1, h2, h3, h4, h5, h6, [class="st-"] {
+        html, body, *, h1, h2, h3, h4, h5, h6, [class*="st-"] {
             font-family: 'Poppins', sans-serif !important;
         }
         .stApp {
@@ -219,10 +219,10 @@ def show_main_app():
     st.sidebar.markdown("---")
     st.sidebar.subheader("Title Effect")
     dark_col, light_col = st.sidebar.columns(2)
-    if dark_col.button("🌙 Dark mode", use_container_width=True):
+    if dark_col.button("🌙 Default", use_container_width=True):
         st.session_state.glow_active = False
         st.rerun()
-    if light_col.button("☀ Light mode", use_container_width=True):
+    if light_col.button("☀️ Glow", use_container_width=True):
         st.session_state.glow_active = True
         st.rerun()
     if st.sidebar.button("Logout"):
@@ -257,8 +257,8 @@ def show_main_app():
             <div class="symmetry-box">
                 <h3>📊 Symmetry Score<br><span>{score}</span> / 100</h3>
             </div>""", unsafe_allow_html=True)
-            st.info(f"*AI's Overall Analysis:* {analysis}")
-            st.success(f"*Critique:* {comment}")
+            st.info(f"**AI's Overall Analysis:** {analysis}")
+            st.success(f"**Critique:** {comment}")
             add_history_entry(st.session_state['user_id'], score, comment, image, datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
 
     st.markdown("---")
@@ -272,10 +272,14 @@ def show_main_app():
             st.markdown('<div class="history-entry">', unsafe_allow_html=True)
             cols = st.columns([1, 3])
             with cols[0]:
-                st.image(thumb_path if os.path.exists(thumb_path) else "Image not found")
+                # --- THIS IS THE INTEGRATED FIX ---
+                if os.path.exists(thumb_path):
+                    st.image(thumb_path)
+                else:
+                    st.warning("Image unavailable") # Shows a warning instead of crashing
             with cols[1]:
                 st.metric(label="Symmetry Score", value=f"{score}/100")
-                st.write(f"*Critique:* {comment}")
+                st.write(f"**Critique:** {comment}")
                 st.caption(f"Analyzed on: {timestamp}")
             st.markdown('</div>', unsafe_allow_html=True)
 
